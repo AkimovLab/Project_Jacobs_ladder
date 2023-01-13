@@ -124,7 +124,39 @@ def plot(mdls, methods):
             
                 plots(F"model_{mdl}_method_{method}", imdl, f["X"], f["Y"])
             
+
+def compute_accum_error(model_hdf_filename, exact_hdf_filename, istate=0):
+    """
+    This function computes the accumulate error between the population of the 
+    TSH/Ehrenfest and exact dynamics.
+    Args:
+        model_hdf_filename (string): The mem_data.hdf file name for (path).
+        model_hdf_filename (string): The data.hdf file name (path).
+        istate (integer): The initial state in the inital condition.
+    Returns:
+        acc_error (numpy arary): The average acumulation error.
+    """
+    # Open and read the model hdf file. This file name is mem_data.hdf but needs
+    # the full path to this file.
+    F = h5py.File(model_hdf_filename, 'r')
+    x1 = np.array(F['sh_pop_adi/data'])
+    # Open and read the exact calculations hdf file. This file name is data.hdf but needs
+    # the full path to this file.
+    F = h5py.File(exact_model_hdf_filename, 'r')
+    x2 = np.array(F['pop_adi/data'])
+    # Compute the difference between the population of the 
+    # exact and model populations
+    diff = x1[:,istate]-x2[:,istate]
+    # Compute the square of the diff
+    tmp = np.power(np.abs(diff),2)
+    # Compute the accumulation sum for the tmp array
+    acc_error = np.cumsum(tmp,axis=0)
+    # Normalize it with 1/T
+    for t in range(acc_error.shape[0]):
+        acc_error[t,:] /= (t+1)
     
+    return acc_error
+ 
     
 p0 = [2.0, 5.0, 7.0, 10.0, 15.0, 18.0, 20.0, 23.0, 25.0, 30.0, 35.0, 40.0]
 ntraj = 100
