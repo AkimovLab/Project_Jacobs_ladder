@@ -1,5 +1,6 @@
 import os
 import sys
+from liblibra_core import *
 
 def set_recipe(recipe):
 
@@ -466,5 +467,5 @@ def set_recipe_v2(dyn_general, recipe, name=""):
     
     dyn_general.update({ "prefix":name, "prefix2":name })
     
-    return dyn_general, elec_params, nucl_params, name
+    return dyn_general, elec_params, nucl_params, model_params, name
 

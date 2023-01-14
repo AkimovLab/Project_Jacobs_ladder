@@ -67,7 +67,17 @@ def potential(q, params):
 
 #================================= Set up dynamics parameters
 # A ten element list
-recipe = []
+recipe = [  0, # Model
+            2, # Initial condition
+            0, # Case
+            0, # Ehrenfest or TSH
+            1, # SH opt
+            4, # Decoherence option
+            2, # Decoherence times option
+            0, # Hop acceptance method
+            0, # NAC calculations
+            0] # SSY
+
 ntraj = 50
 dt = 10.0
 nsteps = 2500
@@ -90,12 +100,12 @@ dyn_general = { "nsteps": nsteps, "ntraj": ntraj, "nstates":2,
 
 rnd = Random()
 
-dyn_general, elec_params, nucl_params, name = set_recipe_v2(dyn_general, recipe, name="")
+dyn_general, elec_params, nucl_params, model_params, name = set_recipe_v2(dyn_general, recipe, name="test")
 
-try:
-    res = tsh_dynamics.generic_recipe(dyn_params, compute_model, model_params, elec_params, nucl_params, rnd)
-except:
-    print('Error Flag: The TSH run could not be done with the following recipe:', recipe)
+#try:
+res = tsh_dynamics.generic_recipe(dyn_general, compute_model, model_params, elec_params, nucl_params, rnd)
+#except:
+#    print('Error Flag: The TSH run could not be done with the following recipe:', recipe)
 
 
 

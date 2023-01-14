@@ -142,26 +142,27 @@ def compute_accum_error(model_hdf_filename, exact_hdf_filename, istate=0):
     x1 = np.array(F['sh_pop_adi/data'])
     # Open and read the exact calculations hdf file. This file name is data.hdf but needs
     # the full path to this file.
-    F = h5py.File(exact_model_hdf_filename, 'r')
+    F = h5py.File(exact_hdf_filename, 'r')
     x2 = np.array(F['pop_adi/data'])
     # Compute the difference between the population of the 
     # exact and model populations
-    diff = x1[:,istate]-x2[:,istate]
+    x1 = x1[:,istate]
+    x2 = x2[:,istate,0].reshape(x1.shape[0])
+    diff = x1-x2
     # Compute the square of the diff
     tmp = np.power(np.abs(diff),2)
     # Compute the accumulation sum for the tmp array
     acc_error = np.cumsum(tmp,axis=0)
     # Normalize it with 1/T
     for t in range(acc_error.shape[0]):
-        acc_error[t,:] /= (t+1)
-    
-    return acc_error
- 
-    
-p0 = [2.0, 5.0, 7.0, 10.0, 15.0, 18.0, 20.0, 23.0, 25.0, 30.0, 35.0, 40.0]
-ntraj = 100
+        acc_error[t] /= (t+1)
 
-get_stats("MDL_", [2,3], p0, [0, 1], ntraj, [90, 94])
-plot([2,3], [90, 94])
+    return x1, x2, acc_error 
+    
+#p0 = [2.0, 5.0, 7.0, 10.0, 15.0, 18.0, 20.0, 23.0, 25.0, 30.0, 35.0, 40.0]
+#ntraj = 100
+
+#get_stats("MDL_", [2,3], p0, [0, 1], ntraj, [90, 94])
+#plot([2,3], [90, 94])
     
     
