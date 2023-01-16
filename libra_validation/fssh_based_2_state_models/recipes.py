@@ -469,3 +469,38 @@ def set_recipe_v2(dyn_general, recipe, name=""):
     
     return dyn_general, elec_params, nucl_params, model_params, name
 
+
+def submit_jobs(submit_filename, python_filename, recipes, dt=10.0, nsteps=2500, ntraj=10):
+    """
+    This file submits the jobs for a set of recipes.
+    Args:
+        submit_filename (string): The path to submit file.
+        recipes (list): A list that contains the recipes for calculations made by itertools.product.
+    Returns:
+        None
+    """
+
+    file = open(submit_filename, 'r')
+    lines = file.readlines()
+    file.close() 
+    recipes = list(recipes)
+    for i in range(len(recipes)):
+        recipe = ''
+        for j in range(len(recipes[i])):
+            recipe += str(recipes[i][j]) 
+        recipe_int = [int(d) for d in recipe]
+        _, _, _, _, name = set_recipe_v2({}, recipe_int, name="test")
+        print('Submitting job for ', name)
+        #recipe = int(recipe)
+        file = open(submit_filename, 'w')
+        for j in range(len(lines)):
+            if "python" in lines[j]:
+                tmp = F'python {python_filename} --recipe {recipe} --dt {dt} --nsteps {nsteps} --ntraj {ntraj} \n'
+                file.write(tmp)
+            else:
+                file.write(lines[j])
+        file.close()
+        os.system(F'sbatch {submit_filename}')
+    
+
+    

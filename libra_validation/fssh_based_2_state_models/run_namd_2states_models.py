@@ -23,6 +23,7 @@ import libra_py.dynamics.exact.save as dvr_save
 
 import libra_py.data_savers as data_savers
 from recipes import *
+import argparse
 
 #from matplotlib.mlab import griddata
 #%matplotlib inline 
@@ -66,21 +67,35 @@ def potential(q, params):
 
 
 #================================= Set up dynamics parameters
-# A ten element list
-recipe = [  0, # Model
-            2, # Initial condition
-            0, # Case
-            0, # Ehrenfest or TSH
-            1, # SH opt
-            4, # Decoherence option
-            2, # Decoherence times option
-            0, # Hop acceptance method
-            0, # NAC calculations
-            0] # SSY
 
-ntraj = 50
-dt = 10.0
-nsteps = 2500
+parser = argparse.ArgumentParser(description='Runs excited states dynamics with different methodologies using Libra...')
+parser.add_argument('--recipe', default='0500100000', type=str)
+parser.add_argument('--ntraj', default=10, type=int)
+parser.add_argument('--nsteps', default=2500, type=int)
+parser.add_argument('--dt', default=10.0, type=float)
+args = parser.parse_args()
+
+# Adopted from https://stackoverflow.com/questions/21270320/turn-a-single-number-into-single-digits-python
+
+
+recipe = [int(d) for d in args.recipe]
+
+
+### A ten element list
+##recipe = [  0, # Model
+##            2, # Initial condition
+##            0, # Case
+##            0, # Ehrenfest or TSH
+##            1, # SH opt
+##            4, # Decoherence option
+##            2, # Decoherence times option
+##            0, # Hop acceptance method
+##            0, # NAC calculations
+##            0] # SSY
+
+ntraj = args.ntraj
+dt = args.dt
+nsteps = args.nsteps
 # Decohrerence rates and average gaps matrices initialization
 decoherence_rates = MATRIX(2,2)
 ave_gaps = MATRIX(2,2)

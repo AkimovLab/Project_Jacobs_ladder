@@ -18,5 +18,4 @@ echo "SLURM_NNODES="$SLURM_NNODES
 echo "SLURMTMPDIR="$SLURMTMPDIR
 echo "working directory="$SLURM_SUBMIT_DIR
 
-python dyn_exact.py 
-python run_namd_2states_models.py
+python run_namd_2states_models.py --recipe 0501100000 --dt 10.0 --nsteps 2500 --ntraj 100 
