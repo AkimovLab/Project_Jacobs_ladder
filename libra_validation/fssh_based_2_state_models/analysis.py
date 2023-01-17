@@ -125,7 +125,7 @@ def plot(mdls, methods):
                 plots(F"model_{mdl}_method_{method}", imdl, f["X"], f["Y"])
             
 
-def compute_accum_error(model_hdf_filename, exact_hdf_filename, istate=0):
+def compute_accum_error(model_hdf_filename, exact_hdf_filename, istate_exact=0, istate_model=0):
     """
     This function computes the accumulate error between the population of the 
     TSH/Ehrenfest and exact dynamics.
@@ -146,8 +146,8 @@ def compute_accum_error(model_hdf_filename, exact_hdf_filename, istate=0):
     x2 = np.array(F['pop_adi/data'])
     # Compute the difference between the population of the 
     # exact and model populations
-    x1 = x1[:,istate]
-    x2 = x2[:,istate,0].reshape(x1.shape[0])
+    x1 = x1[:,istate_exact]
+    x2 = x2[:,istate_model,0].reshape(x1.shape[0])
     diff = x1-x2
     # Compute the square of the diff
     tmp = np.power(np.abs(diff),2)

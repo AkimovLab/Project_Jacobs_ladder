@@ -4,10 +4,10 @@ from itertools import product
 from recipes import submit_jobs
 
 
-#============================== Manual set 2: Hop acceptance methods without decoherence
+#============================== Manual set 1: Hop acceptance methods without decoherence
 models = [0,1,2,3]
 #======= Initial conditions, Both coords and momenta are sampled, istate=[1,0]
-iconds = [5]
+iconds = [2]
 #======= Adiabatic initialization, Adiabatic TDSE
 reps    = [0]
 #======= TSH, Ehrenfest
@@ -31,10 +31,10 @@ print(recipes)
 submit_jobs('submit.slm', 'run_namd_2states_models.py', recipes, dt=10.0, nsteps=2500, ntraj=100)
 #sys.exit(0)
 
-#============================== Manual set 1: Decoherence methods
+#============================== Manual set 2: Decoherence methods
 models = [0,1,2,3]
 #======= Initial conditions, Both coords and momenta are sampled, istate=[1,0]
-iconds = [5]
+iconds = [2]
 #======= Adiabatic initialization, Adiabatic TDSE
 reps    = [0]
 #======= TSH, Ehrenfest
