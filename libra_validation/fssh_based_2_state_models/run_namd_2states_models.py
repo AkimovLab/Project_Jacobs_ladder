@@ -114,6 +114,7 @@ dyn_general = { "nsteps": nsteps, "ntraj": ntraj, "nstates":2,
               }
 
 rnd = Random()
+elec)
 
 dyn_general, elec_params, nucl_params, model_params, name = set_recipe_v2(dyn_general, recipe, name="test")
 

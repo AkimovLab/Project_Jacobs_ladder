@@ -22,7 +22,6 @@ import libra_py.dynamics.exact.compute as dvr
 import libra_py.dynamics.exact.save as dvr_save
 
 import libra_py.data_savers as data_savers
-sys.path.append('../')
 from recipes import *
 import argparse
 
