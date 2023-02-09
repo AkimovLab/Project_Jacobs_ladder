@@ -170,6 +170,8 @@ def compute_error(x1, model2_path, prop='D_adi', method=0, min_nsteps=1, istate_
         # Needs to sys.exit(0) as well but I do not do this in Jupyter notebook :)
     diff_squared = np.power(np.abs(diff),2)
     error = np.sum(diff_squared)/nsteps
+    F2.close()
+    print(coeff1, coeff2)
         
     return x1, x2, error
 
