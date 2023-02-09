@@ -77,9 +77,8 @@ args = parser.parse_args()
 
 # Adopted from https://stackoverflow.com/questions/21270320/turn-a-single-number-into-single-digits-python
 
-
-recipe = [int(d) for d in args.recipe]
-
+recipes = args.recipe
+recipe = [int(d) for d in recipes.split(',')]
 
 ### A ten element list
 ##recipe = [  0, # Model
@@ -109,20 +108,20 @@ dyn_general = { "nsteps": nsteps, "ntraj": ntraj, "nstates":2,
                 "dephasing_informed":0, "decoherence_rates":decoherence_rates, "ave_gaps":ave_gaps,               
                 "progress_frequency":1.0, "which_adi_states":range(2), "which_dia_states":range(2),                
                 "mem_output_level":3,
-                "properties_to_save":[ "timestep", "time", "q", "p", "Etot_ave", "se_pop_adi", "se_pop_dia", "sh_pop_adi" ],
+                "properties_to_save":[ "timestep", "time", "q", "p", "Etot_ave", "se_pop_adi", "se_pop_dia", "sh_pop_adi", "Cadi", "D_adi" ],
                 "prefix":"adiabatic_md", "prefix2":"adiabatic_md"
               }
 
 rnd = Random()
-elec)
 
 dyn_general, elec_params, nucl_params, model_params, name = set_recipe_v2(dyn_general, recipe, name="test")
-
-#try:
-res = tsh_dynamics.generic_recipe(dyn_general, compute_model, model_params, elec_params, nucl_params, rnd)
-#except:
-#    print('Error Flag: The TSH run could not be done with the following recipe:', recipe)
+name = F"{name}_dt_{dt}_nsteps_{nsteps}"
+dyn_general.update({ "prefix":name, "prefix2":name })
 
 
+try:
+    res = tsh_dynamics.generic_recipe(dyn_general, compute_model, model_params, elec_params, nucl_params, rnd)
+except:
+    print('Error Flag: The TSH run could not be done with the following recipe:', recipe)
 
     
