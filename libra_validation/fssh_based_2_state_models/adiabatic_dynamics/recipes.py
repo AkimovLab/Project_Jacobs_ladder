@@ -194,9 +194,11 @@ def set_recipe_v2(dyn_general, recipe, name=""):
                                    1: FSSH
                                    2: GFSH
                                    3: MSSH
-                                   4: LZ
-                                   5: ZN
-                                   6: DISH
+                                   4: LZ, with x-ing based on diabatic surfaces
+                                   5: LZ, with x-ing based on adiabatic surfaces
+                                   6: LZ, with x-ing based on NAC sign change
+                                   7: ZN
+                                   8: DISH
                                6th: Decoherence options (F)
                                    0: no decoherence
                                    1: mSDM
@@ -229,7 +231,7 @@ def set_recipe_v2(dyn_general, recipe, name=""):
         name (string): A descriptive name for the recipe
     """
 
-    #============================ 1st: Models
+    #============================ 1st: Models - this should not be a part of a recipe!
     model_params1 = {"model":1, "model0":1, "E_n":[0.0,  0.0], "x_n":[0.0,  2.5],"k_n":[0.002, 0.005],"V":0.000, "nstates":2}
     model_params2 = {"model":1, "model0":1, "E_n":[0.0,  0.0], "x_n":[0.0,  2.5],"k_n":[0.002, 0.005],"V":0.001, "nstates":2}
     model_params3 = {"model":1, "model0":1, "E_n":[0.0,  0.0], "x_n":[0.0,  2.5],"k_n":[0.002, 0.005],"V":0.01, "nstates":2}
@@ -241,9 +243,8 @@ def set_recipe_v2(dyn_general, recipe, name=""):
     model_indx = recipe[0]
     name = F"{name}_model_{model_indx}"
     model_params = all_model_params[model_indx]
-    #============================ 1st: Models
 
-    #============================ 2nd: Initial conditions
+    #============================ 2nd: Initial conditions - this should be not a part of a recipe! 
     init_cond_indx = recipe[1]
     name = F"{name}_icond_{init_cond_indx}"
 
@@ -279,13 +280,20 @@ def set_recipe_v2(dyn_general, recipe, name=""):
         # Both coords and momenta are sampled
         nucl_params = {"ndof":1, "init_type":0, "q":[-4.0], "p":[0.0], "mass":[2000.0], "force_constant":[0.01] }
         elec_params.update({"ndia":2, "nadi":2, "init_type":2, "istates":[1.0, 0.0]})
+
+        # Example:
+        # nucl_params.update({"init_type":0})
+        # elec_params.update({"init_type":2})
+
     else:
         print("Error occured! No such option available for initial condition. Exiting now!")
         sys.exit(0)
 
-    #============================ 2nd: Initial conditions
 
-    #============================ 3rd: Representation (case)
+    #============================ 3rd: Electronic TD-SE or Liouville's equation integration method ============
+    # if you want, it may be better to make the initialization options for electronic and nuclear DOFs to be 
+    # two separate categories, or they should be initialized outside of this function - this would reduce the 
+    # number of the cases below! 
 
     case = recipe[2]
     name = F"{name}_case_{case}"
@@ -405,7 +413,6 @@ def set_recipe_v2(dyn_general, recipe, name=""):
         print("Error occured! No such option available for representation. Exiting now!")
         sys.exit(0)
 
-    #============================ 3rd: Representation (case)
     
     #============================ 4th: Ehrenfest or state-resolved options
     # This is what we use with any of the TSH-based methods - in all cases here, we would 
@@ -425,7 +432,6 @@ def set_recipe_v2(dyn_general, recipe, name=""):
     else:
         print("Error occured! No such option available for Ehrenfest or state-resolved. Exiting now!")
         sys.exit(0)
-    #============================ 4th: Ehrenfest or state-resolved options
 
     #============================ 5th: Surface hopping options
     sh_opt = recipe[4]
@@ -443,18 +449,23 @@ def set_recipe_v2(dyn_general, recipe, name=""):
         dyn_general.update({"tsh_method":2 }) # MSSH
         name = F"{name}_MSSH_"
     elif sh_opt==4:
-        dyn_general.update({"tsh_method":3, "rep_lz":0 })  # LZ options
-        name = F"{name}_LZ_"
+        dyn_general.update({"tsh_method":3, "rep_lz":0 })  # LZ options, with x-ing based on diabatic surfaces
+        name = F"{name}_LZ0_"
     elif sh_opt==5:
+        dyn_general.update({"tsh_method":3, "rep_lz":1 })  # LZ options, with x-ing based on adiabatic surfaces
+        name = F"{name}_LZ1_"
+    elif sh_opt==6:
+        dyn_general.update({"tsh_method":3, "rep_lz":2 })  # LZ options, with x-ing based on NAC sign change
+        name = F"{name}_LZ2_"
+    elif sh_opt==7:
         dyn_general.update({"tsh_method":4, "rep_lz":0 }) # ZN
         name = F"{name}_ZN_"
-    elif sh_opt==6:
+    elif sh_opt==8:
         dyn_general.update({"tsh_method":5 }) # DISH
         name = F"{name}_DISH_"
     else:
         print("Error occured! No such option available for surface hopping. Exiting now!")
         sys.exit(0)
-    #============================ 5th: Surface hopping options
 
     #============================ 6th: Decoherence options
     deco_opt = recipe[5]
@@ -477,7 +488,6 @@ def set_recipe_v2(dyn_general, recipe, name=""):
     else:
         print("Error occured! No such option available for decoherence. Exiting now!")
         sys.exit(0)
-    #============================ 6th: Decoherence options
     
     #============================ 7th: Decoherence times option
     deco_time_opt = recipe[6]
@@ -498,7 +508,6 @@ def set_recipe_v2(dyn_general, recipe, name=""):
     else:
         print("Error occured! No such option available for decoherence times. Exiting now!")
         sys.exit(0)
-    #============================ 7th: Decoherence times option
     
     #============================ 8th: Hop acceptance method
     hop_acceptance = recipe[7]
@@ -524,7 +533,6 @@ def set_recipe_v2(dyn_general, recipe, name=""):
     else:
         print("Error occured! No such option available for hop acceptance method. Exiting now!")
         sys.exit(0)
-    #============================ 8th: Hop acceptance method
 
     #============================ 9th: NAC update method
     nac_update_method = recipe[8]
@@ -541,7 +549,6 @@ def set_recipe_v2(dyn_general, recipe, name=""):
     else:
         print("Error occured! No such option available for computing NACs. Exiting now!")
         sys.exit(0)
-    #============================ 9th: NAC update method
     
     #============================ 10th: Nuclear phase correction by Shenvi, Subotnik, and Yang (SSY)
     ssy = recipe[9]
@@ -555,11 +562,16 @@ def set_recipe_v2(dyn_general, recipe, name=""):
     else:
         print("Error occured! No such option available for SSY. Exiting now!")
         sys.exit(0)
-    #============================ 10th: Nuclear phase correction by Shenvi, Subotnik, and Yang (SSY)
-    
+   
+
+    #================ Common stuff =================
+ 
     dyn_general.update({ "prefix":name, "prefix2":name })
+
     
     return dyn_general, elec_params, nucl_params, model_params, name
+
+
 
 
 def submit_jobs(submit_filename, python_filename, recipes, dt=10.0, nsteps=2500, ntraj=10):
@@ -572,9 +584,10 @@ def submit_jobs(submit_filename, python_filename, recipes, dt=10.0, nsteps=2500,
         None
     """
 
-    file = open(submit_filename, 'r')
-    lines = file.readlines()
-    file.close() 
+    File = open(submit_filename, 'r')
+    lines = File.readlines()
+    File.close() 
+
     recipes = list(recipes)
     for i in range(len(recipes)):
         recipe = ''
@@ -590,15 +603,16 @@ def submit_jobs(submit_filename, python_filename, recipes, dt=10.0, nsteps=2500,
             name = "      --         "
         print('Submitting job for ', name)
         #recipe = int(recipe)
-        file = open(submit_filename, 'w')
+
+        File = open(submit_filename, 'w')
         for j in range(len(lines)):
             if "python" in lines[j]:
                 tmp = F'python {python_filename} --recipe {recipe} --dt {dt} --nsteps {nsteps} --ntraj {ntraj} \n'
                 print(tmp, len(recipe))
-                file.write(tmp)
+                File.write(tmp)
             else:
-                file.write(lines[j])
-        file.close()
+                File.write(lines[j])
+        File.close()
         os.system(F'sbatch {submit_filename}')
     
 
